@@ -34,7 +34,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 
-@Autonomous(name = "Drive to line", group = "Test")
+@Autonomous(name = "Rotation Test", group = "Test")
 public class RotationTest extends LinearOpMode {
 
     /* Declare OpMode members. */

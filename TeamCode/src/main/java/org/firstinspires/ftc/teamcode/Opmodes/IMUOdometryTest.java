@@ -7,7 +7,7 @@ import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 
-@TeleOp(name="Teleop",group = "Test")
+@TeleOp(name="IMU odometry test",group = "Test")
 public class IMUOdometryTest extends LinearOpMode {
 
     Robot robot = new Robot();
