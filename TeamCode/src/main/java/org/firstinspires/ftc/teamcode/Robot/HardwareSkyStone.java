@@ -37,6 +37,16 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
+
 /**
  * Motor channel:  Left front drive motor:        "left_front_drive"
  * Motor channel:  Left rear drive motor:        "left_rear_drive"
@@ -53,8 +63,17 @@ public class HardwareSkyStone
     public BNO055IMU imu;
     public NormalizedColorSensor colorSensor;
     public int cameraMonitorViewID;
-
-
+    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
+    private static final boolean PHONE_IS_PORTRAIT = true;
+    private static final String VUFORIA_KEY =
+            "AXV9/0T/////AAABmdy5WsaLkE9sikFO7Jw6Eq12u+U5LoQH27GNe7jhB/Zkx+5rQBJAtxZDAmzKEXFDKnp2i8ypCE7zm8BFkg8ALmGROdE7c5A5mkc3pHm5fD8qkWAeYajXEZLUIXqUpf9aaMFR7vjqQu4QHOlA487t33Qq1GPf2rDSP94MH6AM+14Rwkf8/s2fR+g0ujNXW4lLZtiRIxdLL27b6H/GyJ66XvdijMYF8Rr2NUFo6j8X5Hm4nPV8j68s30m5bY1Ac6DDv4fJ1NPoEyhMKKmPv2YRdABoCGung9pTQXGNWg1uQIl5Ihft9Pmhohbofu3AhlhoOZHgTFX6cLV9EoWT9+BMWj0Cvrks+gpHsNBL0vcsJaGD";
+    public VuforiaLocalizer vuforia = null;
+    private float phoneXRotate = 0;
+    private float phoneYRotate = 0;
+    private float phoneZRotate = 0;
+    private static final float mmPerInch = 25.4f;
+    public VuforiaLocalizer.Parameters vuforiaParameters = new VuforiaLocalizer.Parameters(cameraMonitorViewID);
+    public OpenGLMatrix robotFromCamera;
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
@@ -99,8 +118,29 @@ public class HardwareSkyStone
         imu = hwMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
-        // Initialize Camera
+        // Initialize Camera for vuforia
         cameraMonitorViewID = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewID", "id", hwMap.appContext.getPackageName());
+
+        vuforiaParameters.vuforiaLicenseKey = VUFORIA_KEY;
+        vuforiaParameters.cameraDirection = CAMERA_CHOICE;
+
+        vuforia = ClassFactory.getInstance().createVuforia(vuforiaParameters);
+
+        if (CAMERA_CHOICE == BACK) {
+            phoneYRotate = -90;
+        } else {
+            phoneYRotate = 90;
+        }
+
+        if (PHONE_IS_PORTRAIT){
+            phoneXRotate = 90;
+        }
+
+        final float CAMERA_FORWARD_DISPLACEMENT = 0.00f * mmPerInch;
+        final float CAMERA_VERTICAL_DISPLACEMENT = 0.00f * mmPerInch;
+        final float CAMERA_LEFT_DISPLACEMENT = 0.00f * mmPerInch;
+
+        robotFromCamera = OpenGLMatrix.translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT).multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES, phoneYRotate, phoneZRotate, phoneXRotate));
 
         // Initialize Color Sensor
         colorSensor = hwMap.get(NormalizedColorSensor.class, "sensor_color");
