@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.Robot.Robot;
 @TeleOp(name="Teleop",group = "Test")
 public class Teleop extends LinearOpMode {
 
-    Robot robot = new Robot();
+    private Robot robot = new Robot();
 
     @Override
     public void runOpMode(){
@@ -22,9 +22,25 @@ public class Teleop extends LinearOpMode {
         robot.init(hardwareMap);
 
         waitForStart();
+
         robot.startIMUAccelerationIntegration();
 
+        telemetry.addLine("Driver-station relative steering.");
+        telemetry.update();
+
         while (opModeIsActive()) {
+
+            if (gamepad1.x) {
+                DRIVER_RELATIVE = !DRIVER_RELATIVE;
+            }
+            if (DRIVER_RELATIVE){
+                telemetry.addLine("Driver-station relative steering.");
+            } else {
+                telemetry.addLine("Robot relative steering.");
+            }
+
+            telemetry.update();
+
             y = -gamepad1.left_stick_y;
             x = gamepad1.left_stick_x;
             pivot = gamepad1.right_stick_x;
