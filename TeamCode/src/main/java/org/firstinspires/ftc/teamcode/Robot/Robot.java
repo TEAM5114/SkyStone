@@ -12,7 +12,8 @@ import org.firstinspires.ftc.teamcode.Subsystems.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Subsystems.SkyStoneDetection;
 
 public class Robot {
-    HardwareSkyStone hardware;
+    HardwareMap hwmap;
+    HardwareSkyStone hardware = new HardwareSkyStone();
     MecanumDrive drive;
     SkyStoneDetection vuforia;
 
@@ -22,7 +23,8 @@ public class Robot {
 
     }
 
-    public void init(HardwareMap hwmap){
+    public void init(HardwareMap ahwmap){
+        hwmap = ahwmap;
         hardware.init(hwmap);
         drive = new MecanumDrive(hardware);
         vuforia = new SkyStoneDetection(hardware);
