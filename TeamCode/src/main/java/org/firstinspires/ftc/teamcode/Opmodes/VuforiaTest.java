@@ -15,7 +15,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 @TeleOp(name = "Vuforia Test", group = "Test")
 public class VuforiaTest extends LinearOpMode {
     OpenGLMatrix skystoneLocation;
-    Robot robot = new Robot();
+    private Robot robot = new Robot();
 
     @Override
     public void runOpMode(){
@@ -25,14 +25,17 @@ public class VuforiaTest extends LinearOpMode {
 
         while (opModeIsActive()){
             if (robot.skystoneIsVisible()){
-                skystoneLocation = robot.getSkystoneLocation();
-                VectorF translation = skystoneLocation.getTranslation();
-                telemetry.addData("Pos (mm)", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                        translation.get(0) , translation.get(1), translation.get(2));
-
-                // express the rotation of the robot in degrees.
-                Orientation rotation = Orientation.getOrientation(skystoneLocation, EXTRINSIC, XYZ, DEGREES);
-                telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
+                telemetry.addLine("Skystone is visible!!!");
+//                skystoneLocation = robot.getSkystoneLocation();
+//                if (skystoneLocation != null) {
+//                    VectorF translation = skystoneLocation.getTranslation();
+//                    telemetry.addData("Pos (mm)", "{X, Y, Z} = %.1f, %.1f, %.1f",
+//                            translation.get(0), translation.get(1), translation.get(2));
+//
+//                    // express the rotation of the robot in degrees.
+//                    Orientation rotation = Orientation.getOrientation(skystoneLocation, EXTRINSIC, XYZ, DEGREES);
+//                    telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
+//                }
             } else {
                 telemetry.addData("Skystone not visible", "");
             }
