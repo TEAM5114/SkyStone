@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.Opmodes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -40,7 +41,7 @@ import org.firstinspires.ftc.teamcode.Robot.HardwareSkyStone;
  */
 
 @TeleOp(name="Mecanum relative", group="Comp")
-//@Disabled
+@Disabled
 public class TeleopRelative extends LinearOpMode {
 
     /* Declare OpMode members. */

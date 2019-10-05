@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.Robot.Robot;
 public class Teleop extends LinearOpMode {
 
     private Robot robot = new Robot();
+    boolean DRIVER_RELATIVE = true; //for robot-relative control, set to false
 
     @Override
     public void runOpMode(){
@@ -17,7 +18,6 @@ public class Teleop extends LinearOpMode {
         double pivot;
         double magnitude;
         double heading;
-        boolean DRIVER_RELATIVE = true; //for robot-relative control, set to false
 
         robot.init(hardwareMap);
 

@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode.Opmodes;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -47,7 +48,7 @@ import org.firstinspires.ftc.teamcode.Robot.HardwareSkyStone;
  */
 
 @TeleOp(name="Mecanum absolute", group="Comp")
-//@Disabled
+@Disabled
 public class TeleopAbsolute extends LinearOpMode {
 
     /* Declare OpMode members. */
