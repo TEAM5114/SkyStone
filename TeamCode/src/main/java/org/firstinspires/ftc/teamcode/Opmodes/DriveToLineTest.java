@@ -57,7 +57,7 @@ public class DriveToLineTest extends LinearOpMode {
     void driveToLine(){
 
         while (!robot.colorDetected(robot.getColors())){
-            robot.run(0.2, 0,0,false);
+            robot.run(0.4, 0,0,false);
         }
     }
 

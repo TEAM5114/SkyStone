@@ -17,7 +17,7 @@ public class Robot {
     MecanumDrive drive;
     SkyStoneDetection vuforia;
 
-    float RED = 0.5f;
+    float RED = 0.35f;
 
     public Robot(){
 
