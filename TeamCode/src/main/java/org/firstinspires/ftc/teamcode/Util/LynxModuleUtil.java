@@ -75,7 +75,7 @@ public class LynxModuleUtil {
     public static LynxFirmwareVersion getFirmwareVersion(LynxModule module){
         String versionString = module.getNullableFirmwareVersionString();
         if (versionString == null){
-            return null:
+            return null;
         }
 
         String[] parts = versionString.split("[ :,]+");
