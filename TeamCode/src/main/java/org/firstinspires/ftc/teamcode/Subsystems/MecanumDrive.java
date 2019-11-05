@@ -33,7 +33,7 @@ public class MecanumDrive {
         leftFrontPower = magnitude * Math.cos(angle - Math.PI/4) + pivot;
         leftRearPower = magnitude * Math.sin(angle - Math.PI/4) + pivot;
         rightFrontPower = magnitude * Math.sin(angle - Math.PI/4) - pivot;
-        rightFrontPower = magnitude * Math.cos(angle - Math.PI/4) - pivot;
+        rightRearPower = magnitude * Math.cos(angle - Math.PI/4) - pivot;
 
         scale = Math.max(
                 Math.max(Math.abs(leftFrontPower), Math.abs(leftRearPower)),
