@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Drive;
 
 import static org.firstinspires.ftc.teamcode.Drive.DriveConstants.BASE_CONSTRAINTS;
 import static org.firstinspires.ftc.teamcode.Drive.DriveConstants.TRACK_WIDTH;
+import static org.firstinspires.ftc.teamcode.Drive.DriveConstants.WHEEL_BASE;
 import static org.firstinspires.ftc.teamcode.Drive.DriveConstants.kA;
 import static org.firstinspires.ftc.teamcode.Drive.DriveConstants.kStatic;
 import static org.firstinspires.ftc.teamcode.Drive.DriveConstants.kV;
@@ -59,7 +60,7 @@ public abstract class MecanumBase extends MecanumDrive {
     private double lastTimestamp;
 
     public MecanumBase() {
-        super(kV, kA, kStatic, TRACK_WIDTH);
+        super(kV, kA, kStatic, TRACK_WIDTH, WHEEL_BASE);
 
         dashboard = FtcDashboard.getInstance();
         dashboard.setTelemetryTransmissionInterval(25);

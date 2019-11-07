@@ -20,6 +20,7 @@ public class DriveConstants {
     public static double WHEEL_RADIUS = 2;
     public static double GEAR_RATIO = 1; // wheel speed / motor speed
     public static double TRACK_WIDTH = 13.5;
+    public static double WHEEL_BASE = 15;
 
     /**
      * If the drive motors do not have encoders or they are not being used for velocity control,
