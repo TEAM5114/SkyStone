@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Drive.MecanumBase;
 import org.firstinspires.ftc.teamcode.Drive.MecanumREV;
 
-@TeleOp(group = "tuning")
+@TeleOp(group = "Test")
 public class LocalizationTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {

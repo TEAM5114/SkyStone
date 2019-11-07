@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.view.View;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
@@ -11,6 +12,7 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 
 @TeleOp(name = "Color sensor", group = "Test")
+@Disabled
 public class ColorSensorTest extends LinearOpMode {
     float[] hsvValues = new float[3];
     final float values[] =hsvValues;

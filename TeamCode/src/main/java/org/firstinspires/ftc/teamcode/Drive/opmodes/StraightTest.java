@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.Drive.MecanumBase;
 import org.firstinspires.ftc.teamcode.Drive.MecanumREV;
 
 @Config
-@Autonomous(group = "Tuning")
+@Autonomous(group = "Test")
 public class StraightTest extends LinearOpMode {
     public static double DISTANCE = 60;
 

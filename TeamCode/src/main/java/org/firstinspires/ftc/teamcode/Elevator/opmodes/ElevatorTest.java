@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Elevator.Elevator;
 
-@Autonomous(group = "Tuning")
+@Autonomous(group = "Test")
 public class ElevatorTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {

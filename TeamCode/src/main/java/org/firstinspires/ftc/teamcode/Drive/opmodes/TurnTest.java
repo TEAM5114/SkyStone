@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.Drive.MecanumBase;
 import org.firstinspires.ftc.teamcode.Drive.MecanumREV;
 
 @Config
-@Autonomous(group = "Tuning")
+@Autonomous(group = "Test")
 public class TurnTest extends LinearOpMode {
     public static double ANGLE = 90;
 

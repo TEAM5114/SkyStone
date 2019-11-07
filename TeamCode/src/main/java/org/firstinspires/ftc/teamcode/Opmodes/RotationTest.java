@@ -30,11 +30,13 @@
 package org.firstinspires.ftc.teamcode.Opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 
 @Autonomous(name = "Rotation Test", group = "Test")
+@Disabled
 public class RotationTest extends LinearOpMode {
 
     /* Declare OpMode members. */

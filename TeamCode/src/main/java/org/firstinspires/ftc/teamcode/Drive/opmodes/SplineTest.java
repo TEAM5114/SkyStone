@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.Drive.MecanumBase;
 import org.firstinspires.ftc.teamcode.Drive.MecanumREV;
 
-@Autonomous(group = "drive")
+@Autonomous(group = "Test")
 public class SplineTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
