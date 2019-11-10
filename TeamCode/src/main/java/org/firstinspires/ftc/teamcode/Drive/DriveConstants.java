@@ -19,14 +19,15 @@ public class DriveConstants {
 
     public static double WHEEL_RADIUS = 2;
     public static double GEAR_RATIO = 1; // wheel speed / motor speed
-    public static double TRACK_WIDTH = 13.5;
-    public static double WHEEL_BASE = 15;
+    public static double TRACK_WIDTH = 13.13;
+    public static double WHEEL_BASE = 12.3;
 
     /**
      * If the drive motors do not have encoders or they are not being used for velocity control,
      * tune these values empirically, otherwise they are fine as is
      */
-    public static double kV = 1.0 / rpmToVelocity(getMaxRpm());
+//    public static double kV = 1.0 / rpmToVelocity(getMaxRpm());
+    public static double kV = 0.0159;
     public static double kA = 0;
     public static double kStatic = 0;
 
