@@ -37,6 +37,7 @@ import java.util.List;
 public abstract class MecanumBase extends MecanumDrive {
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0,0,0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0,0,0);
+    public SkystoneDetector detector;
 
     public enum Mode {
         IDLE,

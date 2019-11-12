@@ -1,15 +1,10 @@
 package org.firstinspires.ftc.teamcode.Drive;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.localization.Localizer;
-
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-
-import java.util.List;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
@@ -26,8 +21,6 @@ public class VuforiaCommon {
     public static int CAMERA_VERTICAL_DISPLACEMENT = 0; // from ground
     public static int CAMERA_LEFT_DISPLACEMENT = 0; // from robot center
 
-    public static double LOW_FREQ_WEIGHT = 0.50;
-
     private static final float mmPerInch = 25.4f;
     private static final float mmTargetHeight = (6) * mmPerInch;
     private static final float stoneZ = 2.00f * mmPerInch;
@@ -38,15 +31,6 @@ public class VuforiaCommon {
     private static final float bridgeRotZ = 180;
     private static final float halfField = 72 * mmPerInch;
     private static final float quadField  = 36 * mmPerInch;
-
-
-    private List<VuforiaTrackable> allTrackables;
-
-    private OpenGLMatrix lastLocation = null;
-    private boolean targetVisible = false;
-
-    private Localizer highFrequencyLocalizer;
-    private Pose2d poseEstimate;
 
     public VuforiaCommon(VuforiaLocalizer localizer, VuforiaLocalizer.CameraDirection cameraDirection) {
         this.localizer = localizer;

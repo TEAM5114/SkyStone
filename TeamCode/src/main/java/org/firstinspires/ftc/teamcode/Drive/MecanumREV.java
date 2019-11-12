@@ -83,6 +83,8 @@ public class MecanumREV extends MecanumBase {
         CameraDevice.getInstance().setFlashTorchMode(true);
 
         setLocalizer(new VisionLocalizer(vuforia, CAMERA_CHOICE, new MecanumLocalizer(this, true)));
+
+        detector = new SkystoneDetector(vuforia, CAMERA_CHOICE);
     }
 
     @Override
