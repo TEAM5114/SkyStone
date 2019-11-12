@@ -13,6 +13,7 @@ public class LocalizationTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         MecanumBase drive = new MecanumREV(hardwareMap);
 
+        drive.setPoseEstimate(new Pose2d(-40, -60, Math.toRadians(90)));
         waitForStart();
 
         while (!isStopRequested()){

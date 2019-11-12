@@ -29,7 +29,7 @@ public class VisionLocalizer implements Localizer {
     public static int CAMERA_VERTICAL_DISPLACEMENT = 0; // from ground
     public static int CAMERA_LEFT_DISPLACEMENT = 0; // from robot center
 
-    public static double LOW_FREQ_WEIGHT = 0.02;
+    public static double LOW_FREQ_WEIGHT = 0.50;
 
     private static final float mmPerInch = 25.4f;
     private static final float mmTargetHeight = (6) * mmPerInch;
@@ -176,11 +176,12 @@ public class VisionLocalizer implements Localizer {
     @Override
     public void setPoseEstimate(@NonNull Pose2d pose2d){
         this.poseEstimate = pose2d;
+        highFrequencyLocalizer.setPoseEstimate(pose2d);
     }
 
     @Override
     public void update(){
-        highFrequencyLocalizer.setPoseEstimate(poseEstimate);
+//        highFrequencyLocalizer.setPoseEstimate(poseEstimate);
         highFrequencyLocalizer.update();
         Pose2d highFrequencyPoseEstimate = highFrequencyLocalizer.getPoseEstimate();
 
@@ -201,8 +202,9 @@ public class VisionLocalizer implements Localizer {
             VectorF translation = lastLocation.getTranslation();
             Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
 
-            Pose2d lowFreqPoseEstimate = new Pose2d(translation.get(0)/mmPerInch, translation.get(1)/mmPerInch, rotation.thirdAngle);
+            Pose2d lowFreqPoseEstimate = new Pose2d(translation.get(0)/mmPerInch, translation.get(1)/mmPerInch, Math.toRadians(rotation.thirdAngle));
             poseEstimate = lowFreqPoseEstimate.times(LOW_FREQ_WEIGHT).plus(highFrequencyPoseEstimate.times(1 - LOW_FREQ_WEIGHT));
+            highFrequencyLocalizer.setPoseEstimate(poseEstimate);
         } else {
             poseEstimate = highFrequencyPoseEstimate;
         }
