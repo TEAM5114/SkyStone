@@ -12,19 +12,16 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
-import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
 @Config
-public class VisionLocalizer extends VuforiaCommon implements Localizer {
+public class LocalizerVuforia extends VuforiaBase implements Localizer {
 
     public static double LOW_FREQ_WEIGHT = 0.50;
 
@@ -38,8 +35,11 @@ public class VisionLocalizer extends VuforiaCommon implements Localizer {
     private Localizer highFrequencyLocalizer;
     private Pose2d poseEstimate;
 
-    public VisionLocalizer(VuforiaLocalizer vuforiaLocalizer, VuforiaLocalizer.CameraDirection cameraDirection, Localizer highFrequencyLocalizer){
-        super(vuforiaLocalizer, cameraDirection);
+    public LocalizerVuforia(
+            VuforiaLocalizer vuforia,
+            VuforiaLocalizer.CameraDirection cameraDirection,
+            Localizer highFrequencyLocalizer){
+        super(vuforia, cameraDirection);
         this.highFrequencyLocalizer = highFrequencyLocalizer;
 
         allTrackables = new ArrayList<>();
@@ -48,7 +48,8 @@ public class VisionLocalizer extends VuforiaCommon implements Localizer {
         }
 
         for (VuforiaTrackable trackable : allTrackables) {
-            ((VuforiaTrackableDefaultListener)trackable.getListener()).setPhoneInformation(phoneLocationOnRobot, cameraDirection);
+            ((VuforiaTrackableDefaultListener)trackable.getListener())
+                    .setPhoneInformation(phoneLocationOnRobot, cameraDirection);
         }
 
         targetsSkystone.activate();
@@ -68,7 +69,6 @@ public class VisionLocalizer extends VuforiaCommon implements Localizer {
 
     @Override
     public void update(){
-//        highFrequencyLocalizer.setPoseEstimate(poseEstimate);
         highFrequencyLocalizer.update();
         Pose2d highFrequencyPoseEstimate = highFrequencyLocalizer.getPoseEstimate();
 
@@ -77,7 +77,8 @@ public class VisionLocalizer extends VuforiaCommon implements Localizer {
             if(((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()){
                 targetVisible = true;
 
-                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
+                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable
+                        .getListener()).getUpdatedRobotLocation();
                 if (robotLocationTransform != null){
                     lastLocation = robotLocationTransform;
                 }
@@ -87,10 +88,15 @@ public class VisionLocalizer extends VuforiaCommon implements Localizer {
 
         if (targetVisible) {
             VectorF translation = lastLocation.getTranslation();
-            Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
+            Orientation rotation = Orientation
+                    .getOrientation(lastLocation, EXTRINSIC, XYZ, RADIANS);
 
-            Pose2d lowFreqPoseEstimate = new Pose2d(translation.get(0)/mmPerInch, translation.get(1)/mmPerInch, Math.toRadians(rotation.thirdAngle));
-            poseEstimate = lowFreqPoseEstimate.times(LOW_FREQ_WEIGHT).plus(highFrequencyPoseEstimate.times(1 - LOW_FREQ_WEIGHT));
+            Pose2d lowFreqPoseEstimate = new Pose2d(
+                    translation.get(0)/mmPerInch,
+                    translation.get(1)/mmPerInch,
+                    rotation.thirdAngle);
+            poseEstimate = lowFreqPoseEstimate.times(LOW_FREQ_WEIGHT)
+                    .plus(highFrequencyPoseEstimate.times(1 - LOW_FREQ_WEIGHT));
             highFrequencyLocalizer.setPoseEstimate(poseEstimate);
         } else {
             poseEstimate = highFrequencyPoseEstimate;

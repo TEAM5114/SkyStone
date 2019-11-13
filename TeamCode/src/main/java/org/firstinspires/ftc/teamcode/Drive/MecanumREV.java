@@ -8,11 +8,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.vuforia.CameraDevice;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.teamcode.Util.LynxModuleUtil;
 
 import java.util.ArrayList;
@@ -28,10 +26,11 @@ public class MecanumREV extends MecanumBase {
 
     private static final String VUFORIA_KEY =
             "AXV9/0T/////AAABmdy5WsaLkE9sikFO7Jw6Eq12u+U5LoQH27GNe7jhB/Zkx+5rQBJAtxZDAmzKEXFDKnp2i8ypCE7zm8BFkg8ALmGROdE7c5A5mkc3pHm5fD8qkWAeYajXEZLUIXqUpf9aaMFR7vjqQu4QHOlA487t33Qq1GPf2rDSP94MH6AM+14Rwkf8/s2fR+g0ujNXW4lLZtiRIxdLL27b6H/GyJ66XvdijMYF8Rr2NUFo6j8X5Hm4nPV8j68s30m5bY1Ac6DDv4fJ1NPoEyhMKKmPv2YRdABoCGung9pTQXGNWg1uQIl5Ihft9Pmhohbofu3AhlhoOZHgTFX6cLV9EoWT9+BMWj0Cvrks+gpHsNBL0vcsJaGD";
-    private VuforiaLocalizer vuforia;
-    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = VuforiaLocalizer.CameraDirection.BACK;
-    private static final boolean useWebcam = true;
-    WebcamName webcamName = null;
+//    private LocalizerVuforia vuforia;
+    private static final org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection CAMERA_CHOICE =
+        org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
+//    private static final boolean useWebcam = true;
+//    WebcamName webcamName = null;
 
 
     public MecanumREV(HardwareMap hardwareMap){
@@ -66,25 +65,41 @@ public class MecanumREV extends MecanumBase {
         rightRear.setDirection(DcMotor.Direction.REVERSE);
         rightFront.setDirection((DcMotor.Direction.REVERSE));
 
-        setPIDCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDCoefficients(25, 10, 0));
+        setPIDCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDCoefficients(
+                25, 10, 0));
 
-        //TODO: Set localizer here
-        //ex: setLocalizer(new VuforiaLocalizer(...));
-        int cameraMonitorViewID = hardwareMap.appContext.getResources()
-                .getIdentifier("cameraMonitorViewID", "id", hardwareMap.appContext.getPackageName());
-        VuforiaLocalizer.Parameters vuforiaParameters = new VuforiaLocalizer.Parameters(cameraMonitorViewID);
-        if (useWebcam) {
-            webcamName = hardwareMap.get(WebcamName.class, "webcam");
-            vuforiaParameters.cameraName = webcamName;
-        }
-        vuforiaParameters.vuforiaLicenseKey = VUFORIA_KEY;
-        vuforiaParameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        vuforia = ClassFactory.getInstance().createVuforia(vuforiaParameters);
-        CameraDevice.getInstance().setFlashTorchMode(true);
-
-        setLocalizer(new VisionLocalizer(vuforia, CAMERA_CHOICE, new MecanumLocalizer(this, true)));
+        //ex: setLocalizer(new LocalizerVuforia(...));
+//        int cameraMonitorViewID = hardwareMap.appContext.getResources()
+//                .getIdentifier("cameraMonitorViewID", "id", hardwareMap.appContext.getPackageName());
+//        LocalizerVuforia.Parameters vuforiaParameters = new LocalizerVuforia.Parameters(cameraMonitorViewID);
+//        if (useWebcam) {
+//            webcamName = hardwareMap.get(WebcamName.class, "webcam");
+//            vuforiaParameters.cameraName = webcamName;
+//        }
+//        vuforiaParameters.vuforiaLicenseKey = VUFORIA_KEY;
+//        vuforiaParameters.cameraDirection = LocalizerVuforia.CameraDirection.BACK;
+//        vuforia = ClassFactory.getInstance().createVuforia(vuforiaParameters);
+        org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer vuforia = createVuforia(hardwareMap);
+        setLocalizer(new LocalizerVuforia(vuforia, CAMERA_CHOICE,
+                new MecanumLocalizer(this, true)));
 
         detector = new SkystoneDetector(vuforia, CAMERA_CHOICE);
+    }
+
+    private org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer createVuforia(HardwareMap hardwareMap){
+
+        int cameraMonitorViewID = hardwareMap.appContext.getResources().getIdentifier(
+                "cameraMonitorViewID", "id", hardwareMap.appContext.getPackageName()
+        );
+
+        org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.Parameters parameters = new org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.Parameters(
+                cameraMonitorViewID);
+
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "webcam");
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraDirection = CAMERA_CHOICE;
+
+        return ClassFactory.getInstance().createVuforia(parameters);
     }
 
     @Override

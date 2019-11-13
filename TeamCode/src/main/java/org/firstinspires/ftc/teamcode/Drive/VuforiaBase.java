@@ -6,14 +6,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
-public class VuforiaCommon {
-    VuforiaLocalizer localizer;
+public class VuforiaBase {
     VuforiaTrackables targetsSkystone;
     OpenGLMatrix phoneLocationOnRobot;
 
@@ -21,21 +20,23 @@ public class VuforiaCommon {
     public static int CAMERA_VERTICAL_DISPLACEMENT = 0; // from ground
     public static int CAMERA_LEFT_DISPLACEMENT = 0; // from robot center
 
+    private static final float PI_F = (float) Math.PI;
     private static final float mmPerInch = 25.4f;
     private static final float mmTargetHeight = (6) * mmPerInch;
     private static final float stoneZ = 2.00f * mmPerInch;
     private static final float bridgeZ = 6.42f * mmPerInch;
     private static final float bridgeY = 23 * mmPerInch;
     private static final float bridgeX = 5.18f * mmPerInch;
-    private static final float bridgeRotY = 59;                                 // Units are degrees
-    private static final float bridgeRotZ = 180;
+    private static final float bridgeRotY = (float)Math.toRadians(59); // Units are radians
+    private static final float bridgeRotZ = (float)Math.toRadians(180);
     private static final float halfField = 72 * mmPerInch;
     private static final float quadField  = 36 * mmPerInch;
 
-    public VuforiaCommon(VuforiaLocalizer localizer, VuforiaLocalizer.CameraDirection cameraDirection) {
-        this.localizer = localizer;
+    public VuforiaBase(
+            VuforiaLocalizer vuforia,
+            VuforiaLocalizer.CameraDirection cameraDirection) {
 
-        targetsSkystone = localizer.loadTrackablesFromAsset("Skystone");
+        targetsSkystone = vuforia.loadTrackablesFromAsset("Skystone");
         VuforiaTrackable stoneTarget = targetsSkystone.get(0);
         stoneTarget.setName("Stone Target");
         VuforiaTrackable blueRearBridge = targetsSkystone.get(1);
@@ -65,75 +66,77 @@ public class VuforiaCommon {
 
         stoneTarget.setLocation(OpenGLMatrix
                 .translation(0, 0, stoneZ)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES,
-                        90, 0, -90)));
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, RADIANS,
+                        PI_F/2, 0, -PI_F/2)));
 
         //Set the position of the bridge support targets with relation to origin (center of field)
         blueFrontBridge.setLocation(OpenGLMatrix
                 .translation(-bridgeX, bridgeY, bridgeZ)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES,
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, RADIANS,
                         0, bridgeRotY, bridgeRotZ)));
 
         blueRearBridge.setLocation(OpenGLMatrix
                 .translation(-bridgeX, bridgeY, bridgeZ)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES,
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, RADIANS,
                         0, -bridgeRotY, bridgeRotZ)));
 
         redFrontBridge.setLocation(OpenGLMatrix
                 .translation(-bridgeX, -bridgeY, bridgeZ)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES,
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, RADIANS,
                         0, -bridgeRotY, 0)));
 
         redRearBridge.setLocation(OpenGLMatrix
                 .translation(bridgeX, -bridgeY, bridgeZ)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES,
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, RADIANS,
                         0, bridgeRotY, 0)));
 
         //Set the position of the perimeter targets with relation to origin (center of field)
         red1.setLocation(OpenGLMatrix
                 .translation(quadField, -halfField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES,
-                        90, 0, 180)));
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, RADIANS,
+                        PI_F/2, 0, PI_F)));
 
         red2.setLocation(OpenGLMatrix
                 .translation(-quadField, -halfField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES,
-                        90, 0, 180)));
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, RADIANS,
+                        PI_F/2, 0, PI_F)));
 
         front1.setLocation(OpenGLMatrix
                 .translation(-halfField, -quadField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES,
-                        90, 0 , 90)));
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, RADIANS,
+                        PI_F/2, 0, PI_F)));
 
         front2.setLocation(OpenGLMatrix
                 .translation(-halfField, quadField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES,
-                        90, 0, 90)));
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, RADIANS,
+                        PI_F/2, 0, PI_F/2)));
 
         blue1.setLocation(OpenGLMatrix
                 .translation(-quadField, halfField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES,
-                        90, 0, 0)));
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, RADIANS,
+                        PI_F/2, 0, 0)));
 
         blue2.setLocation(OpenGLMatrix
                 .translation(quadField, halfField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES,
-                        90, 0, 0)));
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, RADIANS,
+                        PI_F/2, 0, 0)));
 
         rear1.setLocation(OpenGLMatrix
                 .translation(halfField, quadField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES,
-                        90, 0 , -90)));
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, RADIANS,
+                        PI_F/2, 0 , -PI_F/2)));
 
         rear2.setLocation(OpenGLMatrix
                 .translation(halfField, -quadField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES,
-                        90, 0, -90)));
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, RADIANS,
+                        PI_F/2, 0, -PI_F/2)));
 
         phoneLocationOnRobot = OpenGLMatrix
-                .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES,
-                        cameraDirection == FRONT ? 90 : -90, 180, 0));
+                .translation(CAMERA_FORWARD_DISPLACEMENT,
+                        CAMERA_LEFT_DISPLACEMENT,
+                        CAMERA_VERTICAL_DISPLACEMENT)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, RADIANS,
+                        cameraDirection == FRONT ? PI_F : -PI_F/2, PI_F, 0));
 
     }
 }
