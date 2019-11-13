@@ -73,7 +73,7 @@ public abstract class MecanumBase extends MecanumDrive {
         turnController = new PIDFController(HEADING_PID);
         turnController.setInputBounds(0, 2 * Math.PI);
 
-        constraints = new MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH);
+        constraints = new MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH, WHEEL_BASE);
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID);
     }
 
@@ -227,4 +227,23 @@ public abstract class MecanumBase extends MecanumDrive {
     public abstract PIDCoefficients getPIDCoefficients(DcMotor.RunMode runMode);
 
     public abstract void setPIDCoefficients(DcMotor.RunMode runMode, PIDCoefficients coefficients);
+
+    public void setDrivePowerRel(Pose2d drivePower, boolean robotRelative){
+        if (robotRelative) {
+            setDrivePower(drivePower);
+        } else {
+            double angle = getExternalHeading();
+            double x = drivePower.getX();
+            double y = drivePower.getY();
+            double heading = drivePower.getHeading();
+            Pose2d drivePowerRel = new Pose2d(x * Math.cos(angle) + y * Math.sin(angle),
+                    x * -Math.sin(angle) + y * Math.cos(angle),
+                    drivePower.getHeading());
+            setDrivePower(drivePowerRel);
+        }
+    }
+
+    public void setDrivePowerRel(Pose2d drivePower){
+        setDrivePowerRel(drivePower, true);
+    }
 }
