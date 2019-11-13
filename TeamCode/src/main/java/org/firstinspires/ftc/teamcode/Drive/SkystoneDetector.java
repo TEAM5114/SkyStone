@@ -1,57 +1,36 @@
 package org.firstinspires.ftc.teamcode.Drive;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
+import java.util.List;
 
-public class SkystoneDetector extends VuforiaCommon {
+public class SkystoneDetector {
+    private TFObjectDetector tfod;
 
-    VuforiaTrackable stoneTarget;
 
-    private static final float mmPerInch = 25.4f;
-
-    private OpenGLMatrix lastLocation = null;
-    private boolean targetVisible;
-
-    public SkystoneDetector(VuforiaLocalizer localizer, VuforiaLocalizer.CameraDirection cameraDirection) {
-        super(localizer, cameraDirection);
-
-        stoneTarget = targetsSkystone.get(0);
-
-        ((VuforiaTrackableDefaultListener)stoneTarget.getListener()).setPhoneInformation(phoneLocationOnRobot, cameraDirection);
-
-        targetsSkystone.activate();
+    public SkystoneDetector(TFObjectDetector tfod) {
+        this.tfod = tfod;
+        tfod.activate();
     }
 
-    public boolean skystoneVisible(){
-
-        targetVisible = false;
-        if (((VuforiaTrackableDefaultListener)stoneTarget.getListener()).isVisible()){
-            targetVisible = true;
-
-            OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)stoneTarget.getListener()).getUpdatedRobotLocation();
-            if (robotLocationTransform != null){
-                lastLocation = robotLocationTransform;
-            }
-        }
-        return targetVisible;
-
-//        if (targetVisible) {
-//            VectorF translation = lastLocation.getTranslation();
-//            Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
-//
-//            return new Pose2d(translation.get(0)/mmPerInch, translation.get(1)/mmPerInch, Math.toRadians(rotation.thirdAngle));
-//        } else {
-//            return null;
+    public List<Recognition> detectSkystone(){
+        // getUpdatedRecognitions() will return null if no new information is available since
+        // the last time that call was made.
+        List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+        return updatedRecognitions;
+//            telemetry.addData("# Object Detected", updatedRecognitions.size());
+//            // step through the list of recognitions and display boundary info.
+//            int i = 0;
+//            for (Recognition recognition : updatedRecognitions) {
+//                telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+//                telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+//                        recognition.getLeft(), recognition.getTop());
+//                telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+//                        recognition.getRight(), recognition.getBottom());
+//            }
+//            telemetry.update();
 //        }
     }
 }
