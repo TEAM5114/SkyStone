@@ -24,8 +24,8 @@ public class Claw {
     }
 
     public void setPosition(double position){
-        for (Servo servo : servos){
-            servo.setPosition(position);
-        }
+//        for (Servo servo : servos){
+//            servo.setPosition(position);
+//        }
     }
 }
