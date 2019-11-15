@@ -8,10 +8,14 @@ import org.firstinspires.ftc.teamcode.Claw.Claw;
 import org.firstinspires.ftc.teamcode.Drive.MecanumBase;
 import org.firstinspires.ftc.teamcode.Drive.MecanumREV;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
 @TeleOp
 public class StateMachineTeleop extends OpMode {
-    MecanumBase drive;
-    Claw claw;
+    MecanumBase drive = new MecanumREV(hardwareMap);
+    Claw claw = new Claw(hardwareMap);
     State state;
 
     enum State {
@@ -22,19 +26,23 @@ public class StateMachineTeleop extends OpMode {
     }
     @Override
     public void init() {
-        drive = new MecanumREV(hardwareMap);
-        claw = new Claw(hardwareMap);
-        drive.setPoseEstimate(new Pose2d(0,0,0));
+        double globalHeading = 0;
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader("/sdcard/FIRST/heading.txt"));
+            globalHeading = Double.valueOf(bufferedReader.readLine());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        drive.setPoseEstimate(new Pose2d(0,0,globalHeading - Math.PI/2));
+        state = State.ROBOT_RELATIVE;
     }
 
     @Override
     public void init_loop(){
-
     }
 
     @Override
     public void start(){
-        state = State.ROBOT_RELATIVE;
     }
 
     @Override
