@@ -44,7 +44,10 @@ public class DetectorTest extends LinearOpMode {
                 }
                 telemetry.update();
             }
-            if (recognitions.size() > 1 || elapsedTime > 500) { break; }
+            if (recognitions.size() > 1 || elapsedTime > 500) {
+                drive.detector.deactivate();
+                break;
+            }
         }
         while (opModeIsActive()){
             if (recognitions == null) {
