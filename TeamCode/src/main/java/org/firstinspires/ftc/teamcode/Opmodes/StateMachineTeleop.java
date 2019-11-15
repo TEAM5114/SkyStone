@@ -12,7 +12,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-@TeleOp
+@TeleOp(group = "Comp")
 public class StateMachineTeleop extends OpMode {
     MecanumBase drive = new MecanumREV(hardwareMap);
     Claw claw = new Claw(hardwareMap);

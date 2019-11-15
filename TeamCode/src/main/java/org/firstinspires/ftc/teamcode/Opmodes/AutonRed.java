@@ -15,7 +15,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 
-@Autonomous(group = "Test")
+@Autonomous(group = "Comp")
 public class AutonRed extends OpMode {
     MecanumBase drive = new MecanumREV(hardwareMap);
     Claw claw = new Claw(hardwareMap);
