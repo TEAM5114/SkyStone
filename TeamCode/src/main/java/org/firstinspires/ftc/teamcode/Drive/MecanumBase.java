@@ -228,22 +228,14 @@ public abstract class MecanumBase extends MecanumDrive {
 
     public abstract void setPIDCoefficients(DcMotor.RunMode runMode, PIDCoefficients coefficients);
 
-    public void setDrivePowerRel(Pose2d drivePower, boolean robotRelative){
-        if (robotRelative) {
-            setDrivePower(drivePower);
-        } else {
-            double angle = getExternalHeading();
-            double x = drivePower.getX();
-            double y = drivePower.getY();
-            double heading = drivePower.getHeading();
-            Pose2d drivePowerRel = new Pose2d(x * Math.cos(angle) + y * Math.sin(angle),
-                    x * -Math.sin(angle) + y * Math.cos(angle),
-                    drivePower.getHeading());
-            setDrivePower(drivePowerRel);
-        }
-    }
-
-    public void setDrivePowerRel(Pose2d drivePower){
-        setDrivePowerRel(drivePower, true);
+    public void setDrivePowerDriverRel(Pose2d drivePower){
+        double angle = getExternalHeading();
+        double x = drivePower.getX();
+        double y = drivePower.getY();
+        double heading = drivePower.getHeading();
+        Pose2d drivePowerRel = new Pose2d(x * Math.cos(angle) + y * Math.sin(angle),
+                x * -Math.sin(angle) + y * Math.cos(angle),
+                drivePower.getHeading());
+        setDrivePower(drivePowerRel);
     }
 }

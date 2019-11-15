@@ -4,9 +4,6 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.Event;
-import org.firstinspires.ftc.robotcore.external.State;
-import org.firstinspires.ftc.robotcore.external.StateMachine;
 import org.firstinspires.ftc.teamcode.Claw.Claw;
 import org.firstinspires.ftc.teamcode.Drive.MecanumBase;
 import org.firstinspires.ftc.teamcode.Drive.MecanumREV;
@@ -55,12 +52,10 @@ public class StateMachineTeleop extends OpMode {
                 } else if (gamepad1.left_bumper) {
                     state = State.ESTOP;
                 } else {
-                    drive.setDrivePowerRel(new Pose2d(
+                    drive.setDrivePowerDriverRel(new Pose2d(
                                     -gamepad1.left_stick_y,
                                     -gamepad1.left_stick_x,
-                                    -gamepad1.right_stick_x),
-                            true);
-
+                                    -gamepad1.right_stick_x));
                     drive.update();
                 }
                 break;
