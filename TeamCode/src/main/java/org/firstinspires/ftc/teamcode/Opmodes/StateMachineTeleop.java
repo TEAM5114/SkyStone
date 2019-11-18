@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Opmodes;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -17,6 +19,11 @@ public class StateMachineTeleop extends OpMode {
     MecanumBase drive;
     Claw claw;
     State state;
+    double inc = 0.5;
+    Vector2d vec = new Vector2d(0,0);
+    Trajectory trajectory;
+    double clawPositionDown = 0;
+    double clawPositionUp = 0;
 
     enum State {
         DRIVER_RELATIVE,
@@ -32,10 +39,11 @@ public class StateMachineTeleop extends OpMode {
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader("/sdcard/FIRST/heading.txt"));
             globalHeading = Double.valueOf(bufferedReader.readLine());
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         drive.setPoseEstimate(new Pose2d(0,0,globalHeading - Math.PI/2));
+        claw.setPositionSync(claw.UP);
         state = State.ROBOT_RELATIVE;
     }
 
@@ -54,7 +62,7 @@ public class StateMachineTeleop extends OpMode {
         switch (state){
             case DRIVER_RELATIVE:
                 if (gamepad1.a){
-                    claw.setPosition(0.5);
+                    claw.setPosition(claw.UP);
                     state = State.ROBOT_RELATIVE;
                 } else if (gamepad1.right_bumper) {
                     claw.setPosition(0.7);
@@ -71,7 +79,7 @@ public class StateMachineTeleop extends OpMode {
                 break;
             case ROBOT_RELATIVE:
                 if (gamepad1.a){
-                    claw.setPosition(0);
+                    claw.setPosition(0.5);
                     state = State.DRIVER_RELATIVE;
                 } else if (gamepad1.right_bumper){
                     claw.setPosition(0.7);
@@ -89,17 +97,32 @@ public class StateMachineTeleop extends OpMode {
                 break;
             case PRECISION:
                 if (gamepad1.a) {
-                    claw.setPosition(0.5);
+                    claw.setPosition(claw.UP);
                     state = State.ROBOT_RELATIVE;
                 } else if (gamepad1.left_bumper) {
                     state = State.ESTOP;
                 } else {
-
+                    if (gamepad1.dpad_up){
+                        vec = new Vector2d(inc, 0);
+                    }
+                    if (gamepad1.dpad_down){
+                        vec = new Vector2d(-inc, 0);
+                    }
+                    if (gamepad1.dpad_right){
+                        vec = new Vector2d(0, -inc);
+                    }
+                    if (gamepad1.dpad_left) {
+                        vec = new Vector2d(0, inc);
+                    }
+                    trajectory = drive.trajectoryBuilder()
+                            .strafeTo(drive.getPoseEstimate().vec().plus(vec))
+                            .build();
+                    drive.followTrajectorySync(trajectory);
                 }
                 break;
             case ESTOP:
                 if (gamepad1.a) {
-                    claw.setPosition(0.5);
+                    claw.setPosition(claw.UP);
                     state = State.ROBOT_RELATIVE;
                 } else if (gamepad1.right_bumper){
                     claw.setPosition(0.7);
@@ -109,13 +132,16 @@ public class StateMachineTeleop extends OpMode {
                 }
                 break;
         }
-        if (gamepad1.right_trigger > 0) {
-            claw.setPosition(1);
+        clawPositionDown = gamepad1.right_trigger;
+        clawPositionUp = gamepad1.left_trigger;
+        if (clawPositionDown != 0) {
+            claw.setPositionSync(clawPositionDown);
+            clawPositionDown = 0;
         }
-        if (gamepad1.left_trigger > 0) {
-            claw.setPosition(0);
+        if (clawPositionUp != 0) {
+            claw.setPositionSync(1 - clawPositionUp);
+            clawPositionUp = 0;
         }
-
     }
 
     @Override
