@@ -14,8 +14,8 @@ import java.io.IOException;
 
 @TeleOp(group = "Comp")
 public class StateMachineTeleop extends OpMode {
-    MecanumBase drive = new MecanumREV(hardwareMap);
-    Claw claw = new Claw(hardwareMap);
+    MecanumBase drive;
+    Claw claw;
     State state;
 
     enum State {
@@ -26,6 +26,8 @@ public class StateMachineTeleop extends OpMode {
     }
     @Override
     public void init() {
+        drive = new MecanumREV(hardwareMap);
+        claw = new Claw(hardwareMap);
         double globalHeading = 0;
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader("/sdcard/FIRST/heading.txt"));
