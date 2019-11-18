@@ -31,11 +31,30 @@ public class Claw {
         }
     }
 
+    public void setPositionSync(double position){
+        setPosition(position);
+        for (Servo servo : servos){
+            while (servo.getPosition() != position){
+                continue;
+            }
+        }
+    }
+
     public void setRightClawPosition(double position){
         rightServo.setPosition(position);
     }
 
+    public void setRightClawPositionSync(double postion){
+        setRightClawPosition(postion);
+        while (rightServo.getPosition() != postion){continue;}
+    }
+
     public void setLeftClawPosition(double position){
         leftServo.setPosition(position);
+    }
+
+    public void setLeftClawPositionSync(double positon){
+        setLeftClawPosition(positon);
+        while (leftServo.getPosition() != positon){continue;}
     }
 }
