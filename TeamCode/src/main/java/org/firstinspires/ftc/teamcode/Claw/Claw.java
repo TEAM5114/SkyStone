@@ -20,12 +20,22 @@ public class Claw {
         leftServo = hardwareMap.get(Servo.class, "leftServo");
         rightServo = hardwareMap.get(Servo.class, "rightServo");
 
+        rightServo.setDirection(Servo.Direction.REVERSE);
+
         servos = Arrays.asList(leftServo, rightServo);
     }
 
     public void setPosition(double position){
-//        for (Servo servo : servos){
-//            servo.setPosition(position);
-//        }
+        for (Servo servo : servos){
+            servo.setPosition(position);
+        }
+    }
+
+    public void setRightClawPosition(double position){
+        rightServo.setPosition(position);
+    }
+
+    public void setLeftClawPosition(double position){
+        leftServo.setPosition(position);
     }
 }
