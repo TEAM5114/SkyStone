@@ -29,9 +29,10 @@ public class DetectorTest extends LinearOpMode {
         waitForStart();
 
         double loopStart = clock.seconds();
-        while (opModeIsActive()) {
-            double elapsedTime = clock.seconds() - loopStart;
-            recognitions = drive.detector.detectSkystone();
+        double elapsedTime = 0;
+        while (elapsedTime < 500) {
+            elapsedTime = clock.seconds() - loopStart;
+            recognitions = drive.detector.detectSkystoneTest();
             if (recognitions != null) {
                 //            telemetry.addData("# Object Detected", updatedRecognitions.size());
                 // step through the list of recognitions and display boundary info.
@@ -44,7 +45,7 @@ public class DetectorTest extends LinearOpMode {
                 }
                 telemetry.update();
             }
-            if (recognitions.size() > 1 || elapsedTime > 500) {
+            if (recognitions.size() > 1) {
                 drive.detector.deactivate();
                 break;
             }
