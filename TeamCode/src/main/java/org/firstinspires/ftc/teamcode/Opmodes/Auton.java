@@ -4,29 +4,20 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.path.heading.LinearInterpolator;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.util.NanoClock;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.Claw.Claw;
 import org.firstinspires.ftc.teamcode.Drive.MecanumBase;
 import org.firstinspires.ftc.teamcode.Drive.MecanumREV;
 
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.TreeMap;
 
 public class Auton extends OpMode {
     //TODO: Enter correct coordinates!!!
     MecanumBase drive;
     Claw claw;
     State state;
-    Vector2d firstStoneLocation, secondStoneLocation, detectLocation, parkLocation;
+    Vector2d firstStoneCoordinates, secondStoneCoordinates, detectCoordinates, parkCoordinates;
     Vector2d stonesLocation, stonesToDeliveryLocation, stageDeliveryLocation, deliveryLocation;
     Trajectory trajectory;
     double startHeading, deliverHeading;
@@ -50,10 +41,10 @@ public class Auton extends OpMode {
         drive.setPoseEstimate(new Pose2d(-33, -66, -Math.PI/2));
         startHeading = drive.getPoseEstimate().getHeading();
         deliverHeading = -Math.PI;
-        detectLocation = drive.getPoseEstimate().vec().plus(new Vector2d(0, 10));
+        detectCoordinates = drive.getPoseEstimate().vec().plus(new Vector2d(0, 7));
         stonesLocation = new Vector2d(0, -33);
         stonesToDeliveryLocation = new Vector2d(0, -1).times(10);
-        parkLocation = new Vector2d(0, -34);
+        parkCoordinates = new Vector2d(0, -34);
 
     }
 
@@ -68,25 +59,25 @@ public class Auton extends OpMode {
             case DETECT_STONE:
                 trajectory = drive.trajectoryBuilder()
                         .reverse()
-                        .lineTo(detectLocation)
+                        .lineTo(detectCoordinates)
                         .build();
                 drive.followTrajectorySync(trajectory);
 
                 int skystone = drive.detector.detectSkystone(500);
                 switch (skystone){
                     case 1:
-                        firstStoneLocation = stonesLocation.plus(new Vector2d(-24, 0));
+                        firstStoneCoordinates = stonesLocation.plus(new Vector2d(-24, 0));
                         break;
                     case 2:
-                        firstStoneLocation = stonesLocation.plus(new Vector2d(-32, 0));
+                        firstStoneCoordinates = stonesLocation.plus(new Vector2d(-32, 0));
                         break;
                     default:
-                        firstStoneLocation = stonesLocation.plus(new Vector2d(-40, 0));
+                        firstStoneCoordinates = stonesLocation.plus(new Vector2d(-40, 0));
                 }
 
-                stageDeliveryLocation = firstStoneLocation.plus(stonesToDeliveryLocation);
+                stageDeliveryLocation = firstStoneCoordinates.plus(stonesToDeliveryLocation);
                 deliveryLocation = new Vector2d(30, stageDeliveryLocation.getY());
-                secondStoneLocation = firstStoneLocation.plus(new Vector2d(-24, 0));
+                secondStoneCoordinates = firstStoneCoordinates.plus(new Vector2d(-24, 0));
 
                 state = State.CAPTURE_FIRST_STONE;
 
@@ -94,7 +85,7 @@ public class Auton extends OpMode {
 
             case CAPTURE_FIRST_STONE:
                 trajectory = drive.trajectoryBuilder()
-                        .strafeTo(firstStoneLocation).build();
+                        .strafeTo(firstStoneCoordinates).build();
                 drive.followTrajectorySync(trajectory);
 
                 claw.setRightClawPositionSync(claw.DOWN);
@@ -106,7 +97,7 @@ public class Auton extends OpMode {
             case DELIVER_STONE:
                 Vector2d loc;
                 if (secondStoneCaptured) {
-                    loc = stageDeliveryLocation.plus(new Vector2d(0, 24));
+                    loc = stageDeliveryLocation.plus(new Vector2d(-24, 0));
                     state = State.MOVE_FOUNDATION;
                 } else {
                     loc = stageDeliveryLocation;
@@ -127,11 +118,12 @@ public class Auton extends OpMode {
 
             case CAPTURE_SECOND_STONE:
                 trajectory = drive.trajectoryBuilder()
-                        .lineTo(stageDeliveryLocation)
-                        .lineTo(stageDeliveryLocation.plus(new Vector2d(0, 24)),
+                        .strafeTo(stageDeliveryLocation)
+                        .reverse()
+                        .lineTo(stageDeliveryLocation.plus(new Vector2d(-24, 0)),
                                 new LinearInterpolator(deliverHeading,
                                         startHeading - deliverHeading))
-                        .strafeTo(secondStoneLocation).build();
+                        .strafeTo(secondStoneCoordinates).build();
                 drive.followTrajectorySync(trajectory);
 
                 claw.setRightClawPositionSync(claw.DOWN);
@@ -161,7 +153,7 @@ public class Auton extends OpMode {
                         .lineTo(new Vector2d(0, drive.getPoseEstimate().getY()),
                                 new LinearInterpolator(deliverHeading,
                                         startHeading - deliverHeading))
-                        .strafeTo(parkLocation)
+                        .strafeTo(parkCoordinates)
                         .build();
 
                 drive.followTrajectorySync(trajectory);
