@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Opmodes;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.path.heading.ConstantInterpolator;
@@ -27,7 +29,13 @@ public class Auton extends OpMode {
     Trajectory trajectory;
     double startHeading, deliverHeading;
     boolean secondStoneCaptured = false;
+    boolean allianceSet = false;
+    Alliance alliance;
 
+    enum Alliance {
+        RED,
+        BLUE;
+    }
     enum State {
         DETECT_STONE,
         CAPTURE_FIRST_STONE,
@@ -42,23 +50,46 @@ public class Auton extends OpMode {
 
     @Override
     public void init() {
+        msStuckDetectLoop = 7000;
+
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
         drive = new MecanumREV(hardwareMap);
         claw = new Claw(hardwareMap);
-        state = State.DETECT_STONE;
-        claw.setPositionSync(0.5);
-        drive.setPoseEstimate(new Pose2d(-33, -66, -Math.PI/2));
-        startHeading = drive.getPoseEstimate().getHeading();
-        deliverHeading = -Math.PI;
-        detectCoordinates = drive.getPoseEstimate().vec().plus(new Vector2d(0, 5));
-        stonesLocation = new Vector2d(0, -33);
-        stonesToDeliveryLocation = new Vector2d(0, -1).times(20);
-        parkCoordinates = new Vector2d(0, -34);
 
+        state = State.DETECT_STONE;
+        claw.setPosition(0.5);
+        deliverHeading = -Math.PI;
+
+        alliance = Alliance.RED;
+
+        telemetry.addLine("Playing as " + alliance.toString() + " alliance.");
+        telemetry.update();
     }
 
     @Override
     public void init_loop(){
-
+        if (!allianceSet) {
+            switch (alliance) {
+                case RED:
+                    startHeading = -Math.PI / 2;
+                    drive.setPoseEstimate(new Pose2d(-33, -66, startHeading));
+                    detectCoordinates = drive.getPoseEstimate().vec().plus(new Vector2d(0, 5));
+                    stonesLocation = new Vector2d(0, -33);
+                    stonesToDeliveryLocation = new Vector2d(0, -20);
+                    parkCoordinates = new Vector2d(0, -34);
+                    break;
+                case BLUE:
+                    startHeading = Math.PI/2;
+                    drive.setPoseEstimate(new Pose2d(-33, 66, startHeading));
+                    detectCoordinates = drive.getPoseEstimate().vec().plus(new Vector2d(0, -5));
+                    stonesLocation = new Vector2d(0, 33);
+                    stonesToDeliveryLocation = new Vector2d(0, 20);
+                    parkCoordinates = new Vector2d(0, 34);
+                    break;
+            }
+            allianceSet = true;
+        }
     }
 
     @Override
@@ -71,7 +102,7 @@ public class Auton extends OpMode {
                         .build();
                 drive.followTrajectorySync(trajectory);
 
-                int skystone = drive.detector.detectSkystone(500);
+                int skystone = drive.detector.detectSkystone(1);
                 telemetry.addLine("Skystone is " + skystone);
                 telemetry.update();
                 switch (skystone){
@@ -99,7 +130,7 @@ public class Auton extends OpMode {
                         .lineTo(firstStoneCoordinates, new ConstantInterpolator(drive.getPoseEstimate().getHeading())).build();
                 drive.followTrajectorySync(trajectory);
 
-                claw.setRightClawPositionSync(Claw.CAPTURE);
+                grabStone();
 
                 state = State.DELIVER_STONE;
 
@@ -125,7 +156,7 @@ public class Auton extends OpMode {
                         .build();
                 drive.followTrajectorySync(trajectory);
 
-                claw.setRightClawPositionSync(0.5);
+                claw.setPosition(0.5);
 
 
                 break;
@@ -148,7 +179,7 @@ public class Auton extends OpMode {
                         .lineTo(secondStoneCoordinates, new ConstantInterpolator(drive.getPoseEstimate().getHeading())).build();
                 drive.followTrajectorySync(trajectory);
 
-                claw.setRightClawPositionSync(Claw.CAPTURE);
+                grabStone();
 
 
                 secondStoneCaptured = true;
@@ -188,6 +219,8 @@ public class Auton extends OpMode {
             case STOP:
                 drive.setDrivePower(new Pose2d(0,0, 0));
         }
+        telemetry.addLine(drive.getPoseEstimate().toString());
+        telemetry.update();
     }
 
     @Override
@@ -198,5 +231,25 @@ public class Auton extends OpMode {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void waitForServo(double milliSeconds){
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e){
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    public void grabStone(){
+        switch (alliance){
+            case RED:
+                claw.setRightClawPosition(Claw.CAPTURE);
+                break;
+            case BLUE:
+                claw.setLeftClawPosition(Claw.CAPTURE);
+                break;
+        }
+        waitForServo(500);
     }
 }

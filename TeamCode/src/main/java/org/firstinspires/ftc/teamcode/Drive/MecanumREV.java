@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Drive;
 
 import android.support.annotation.NonNull;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -82,6 +83,7 @@ public class MecanumREV extends MecanumBase {
 //        vuforiaParameters.cameraDirection = LocalizerVuforia.CameraDirection.BACK;
 //        vuforia = ClassFactory.getInstance().createVuforia(vuforiaParameters);
         VuforiaLocalizer vuforia = createVuforia(hardwareMap);
+        FtcDashboard.getInstance().startCameraStream(vuforia, 0);
         setLocalizer(new LocalizerVuforia(vuforia, CAMERA_CHOICE,
                 new MecanumLocalizer(this, true)));
 
