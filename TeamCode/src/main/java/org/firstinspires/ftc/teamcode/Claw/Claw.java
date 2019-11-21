@@ -11,6 +11,7 @@ import java.util.List;
 public class Claw {
     public static double UP = 0.0;
     public static double DOWN = 1.0;
+    public static double CAPTURE = 0.85;
     public static double BASE = 0.9;
 
     private Servo leftServo, rightServo;

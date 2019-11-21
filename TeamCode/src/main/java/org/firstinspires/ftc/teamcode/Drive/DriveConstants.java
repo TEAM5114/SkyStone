@@ -37,7 +37,7 @@ public class DriveConstants {
      * is optional.  Jerk = 0 forces acceleration limited profiling
      */
     public static DriveConstraints BASE_CONSTRAINTS = new DriveConstraints(
-            30.0, 30.0, 0.0,
+            33.0, 33.0, 0.0,
             Math.toRadians(180), Math.toRadians(180), 0.0
     );
 

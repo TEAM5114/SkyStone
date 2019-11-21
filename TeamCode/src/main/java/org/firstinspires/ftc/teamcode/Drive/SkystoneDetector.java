@@ -34,7 +34,8 @@ public class SkystoneDetector {
             // getUpdatedRecognitions() will return null if no new information is available since
             // the last time that call was made.
             recognitions = tfod.getUpdatedRecognitions();
-            if (recognitions != null){ break; }
+            if (recognitions != null && recognitions.size() > 1){ break; }
+            elapsedTime = clock.seconds() - startTime;
         }
         tfod.deactivate();
         if (recognitions == null) {
@@ -52,8 +53,11 @@ public class SkystoneDetector {
             }
             int i = 1;
             for (Map.Entry<Float, String> entry : treeMap.entrySet()){
-                if (entry.getValue().equals("Skystone")) { break; }
-                i++;
+                if (entry.getValue().equals("Skystone")) {
+                    break;
+                } else {
+                    i++;
+                }
             }
             return i;
         }
