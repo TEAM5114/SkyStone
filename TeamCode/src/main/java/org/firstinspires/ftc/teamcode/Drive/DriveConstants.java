@@ -15,8 +15,8 @@ public class DriveConstants {
      */
     private static final MotorConfigurationType MOTOR_CONFIG =
             MotorConfigurationType.getMotorType(NeveRest20Gearmotor.class);
-    private static final double TICKS_PER_REV = MOTOR_CONFIG.getTicksPerRev();
-
+//    private static final double TICKS_PER_REV = MOTOR_CONFIG.getTicksPerRev();
+    private static final double TICKS_PER_REV = 480;
     public static double WHEEL_RADIUS = 2;
     public static double GEAR_RATIO = 1; // wheel speed / motor speed
     public static double TRACK_WIDTH = 13.13;
@@ -26,8 +26,8 @@ public class DriveConstants {
      * If the drive motors do not have encoders or they are not being used for velocity control,
      * tune these values empirically, otherwise they are fine as is
      */
-//    public static double kV = 1.0 / rpmToVelocity(getMaxRpm());
-    public static double kV = 0.0159;
+    public static double kV = 1.0 / rpmToVelocity(getMaxRpm());
+//    public static double kV = 0.0159;
     public static double kA = 0;
     public static double kStatic = 0;
 
@@ -50,6 +50,7 @@ public class DriveConstants {
     }
 
     public static double getMaxRpm(){
-        return MOTOR_CONFIG.getMaxRPM();
+//        return MOTOR_CONFIG.getMaxRPM();
+    return 300.0;
     }
 }
