@@ -34,6 +34,7 @@ public class Auton extends OpMode {
 //        claw = new Claw(hardwareMap);
         state = State.DETECT_STONE;
 //        claw.setPositionSync(0.5);
+        drive.setStartHeading(180);
     }
 
     @Override
@@ -44,20 +45,20 @@ public class Auton extends OpMode {
     public void loop() {
         switch (state){
             case DETECT_STONE:
-                drive.forwardToPositionWait(-10, 0.4);
+                drive.forwardToPosition(-10, 0.4);
 
                 int skystone = detector.detectSkystone(500);
                 telemetry.addLine("Skystone is " + skystone);
                 telemetry.update();
                 switch (skystone){
                     case 1:
-                        strafeToStone = -2;
+                        strafeToStone = 2;
                         break;
                     case 2:
-                        strafeToStone = 6;
+                        strafeToStone = -6;
                        break;
                     default:
-                        strafeToStone = 14;
+                        strafeToStone = -14;
                 }
 
                 state = State.CAPTURE_FIRST_STONE;
@@ -65,9 +66,9 @@ public class Auton extends OpMode {
                 break;
 
             case CAPTURE_FIRST_STONE:
-                drive.strafeToPositionWait(strafeToStone, 0.4);
-                drive.forwardToPositionWait(-15, 0.25);
-                drive.forwardToPositionWait(-4, 0.2);
+                drive.strafeToPosition(strafeToStone, 0.4);
+                drive.forwardToPosition(-15, 0.25);
+                drive.forwardToPosition(-4, 0.2);
 
 //                claw.setRightClawPositionSync(Claw.CAPTURE);
 
@@ -80,16 +81,16 @@ public class Auton extends OpMode {
 //                claw.setRightClawPositionSync(0.5);
 
                 if (secondStoneCaptured) {
-                    drive.forwardToPositionWait(10, 0.4);
-                    drive.strafeToPositionWait(24, 0.35);
-                    drive.turnThruAngleWait(-90, 0.35);
-                    drive.forwardToPositionWait(-20, 0.6);
+                    drive.forwardToPosition(10, 0.4);
+                    drive.strafeToPosition(24, 0.35);
+                    drive.turnToHeading(90, 0.35);
+                    drive.forwardToPosition(-20, 0.6);
 
                     state = State.MOVE_FOUNDATION;
                 } else {
-                    drive.forwardToPositionWait(10, 0.4);
-                    drive.turnThruAngleWait(-90, 0.35);
-                    drive.forwardToPositionWait(-20, 0.6);
+                    drive.forwardToPosition(10, 0.4);
+                    drive.turnToHeading(90, 0.35);
+                    drive.forwardToPosition(-20, 0.6);
 
                     state = State.STAGE_FOR_SECOND_STONE;
                 }
@@ -98,17 +99,17 @@ public class Auton extends OpMode {
 
             case STAGE_FOR_SECOND_STONE:
 
-                drive.forwardToPositionWait(20, 0.6);
-                drive.turnThruAngleWait(90, 0.35);
-                drive.strafeToPositionWait(strafeToStone+24, 0.4);
+                drive.forwardToPosition(20, 0.6);
+                drive.turnToHeading(180, 0.35);
+                drive.strafeToPosition(strafeToStone-24, 0.4);
 
                 state = State.CAPTURE_SECOND_STONE;
 
                 break;
 
             case CAPTURE_SECOND_STONE:
-                drive.forwardToPositionWait(-15, 0.25);
-                drive.forwardToPositionWait(-4, 0.2);
+                drive.forwardToPosition(-15, 0.25);
+                drive.forwardToPosition(-4, 0.2);
 
 //                claw.setRightClawPositionSync(0.5);
 
@@ -133,12 +134,12 @@ public class Auton extends OpMode {
                 break;
 
             case PARK:
-                drive.forwardToPositionWait(10, 0.5);
+                drive.forwardToPosition(10, 0.5);
 
                 state = State.STOP;
                 break;
             case STOP:
-                drive.power(0);
+                drive.setPower(0,0,0);
         }
     }
 

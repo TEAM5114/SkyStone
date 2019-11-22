@@ -36,7 +36,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
 @Autonomous(name = "Auto_RED", group = "Team7643")
-//@Disabled
+@Disabled
 
 public class SkyStone_Auto_RED extends LinearOpMode {
 

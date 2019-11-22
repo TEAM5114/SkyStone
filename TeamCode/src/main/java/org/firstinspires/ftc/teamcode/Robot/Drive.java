@@ -3,62 +3,54 @@ package org.firstinspires.ftc.teamcode.Robot;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+
+import java.util.Arrays;
+import java.util.List;
+
 public class Drive {
-    public DcMotor LF;
-    public DcMotor RF;
-    public DcMotor LR;
-    public DcMotor RR;
-    public BNO055IMU imu;
+    private DcMotor leftFront;
+    private DcMotor leftRear;
+    private DcMotor rightRear;
+    private DcMotor rightFront;
+    private List<DcMotor> motors;
+    private BNO055IMU imu;
 
-    private double ticsperinch = 480 / 4 / 3.1415926;
-    private double ticsperdegree = 8.6444444444;
+    private double WHEEL_DIAMETER = 4;
+    private double ticsperinch = 480.0 / WHEEL_DIAMETER / Math.PI;
 
-    private double angle1 = 0;
-    private double angle2 = 0;
-    private int lfencint = 0;
-    private int rfencint = 0;
-    private int rrencint = 0;
-    private int lrencint = 0;
-    private int lfenccur = 0;
-    private int rfenccur = 0;
-    private int rrenccur = 0;
-    private int lrenccur = 0;
-
-
+    private double startHeading = 0;
 
     public Drive(HardwareMap hardwareMap) {
-        LF = hardwareMap.get(DcMotor.class, "lf");
-        RF = hardwareMap.get(DcMotor.class, "rf");
-        LR = hardwareMap.get(DcMotor.class, "lr");
-        RR = hardwareMap.get(DcMotor.class, "rr");
+        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
+        leftRear = hardwareMap.get(DcMotor.class, "leftRear");
+        rightRear = hardwareMap.get(DcMotor.class, "rightRear");
+        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
 
-        LF.setDirection(DcMotorSimple.Direction.FORWARD);
-        RF.setDirection(DcMotorSimple.Direction.REVERSE);
-        LR.setDirection(DcMotorSimple.Direction.FORWARD);
-        RR.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        LF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        RF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        LR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        RR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
+
+        for (DcMotor motor : motors){
+            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
-        BNO055IMU.Parameters imuparam = new BNO055IMU.Parameters();
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
 
-        //initializing the imu
-
-        //imuparam = imu.getParameters();
-        imuparam.angleUnit = BNO055IMU.AngleUnit.RADIANS;
-        imuparam.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        imuparam.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        imuparam.loggingEnabled = true;
-        imuparam.loggingTag = "IMU";
-        imuparam.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-        imu.initialize(imuparam);
+        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        imu.initialize(parameters);
 
     }
 
@@ -66,139 +58,105 @@ public class Drive {
         int delta = ((int) (inches * ticsperinch));
 //        telemetry.addData("delta ", delta);
 //        telemetry.update();
-        LF.setTargetPosition(LF.getCurrentPosition() + delta);
-        RF.setTargetPosition(RF.getCurrentPosition() + delta);
-        RR.setTargetPosition(RR.getCurrentPosition() + delta);
-        LR.setTargetPosition(LR.getCurrentPosition() + delta);
-
-        LF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        RF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        RR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        LR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        power(power);
-    }
-
-    public void forwardToPositionWait(double inches, double power){
-        forwardToPosition(inches, power);
-        while (isBusy()){
-            continue;
+        for (DcMotor motor : motors){
+            motor.setTargetPosition(motor.getCurrentPosition() + delta);
+            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
-        power(0);
+
+        setPower(power, 0, 0);
+        while (isBusy()) {
+        }
+        setPower(0,0,0);
     }
 
     public void strafeToPosition(double inches, double power) {
         int delta = ((int) (inches * ticsperinch * 1.1));
-        LF.setTargetPosition(LF.getCurrentPosition() + delta);
-        RF.setTargetPosition(RF.getCurrentPosition() - delta);
-        RR.setTargetPosition(RR.getCurrentPosition() + delta);
-        LR.setTargetPosition(LR.getCurrentPosition() - delta);
+        leftFront.setTargetPosition(leftFront.getCurrentPosition() + delta);
+        leftRear.setTargetPosition(leftRear.getCurrentPosition() - delta);
+        rightRear.setTargetPosition(rightRear.getCurrentPosition() + delta);
+        rightFront.setTargetPosition(leftFront.getCurrentPosition() - delta);
 
-        LF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        RF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        RR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        LR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        power(power);
-    }
-
-    public void  strafeToPositionWait(double inches, double power){
-        strafeToPosition(inches, power);
-        while (isBusy()){
-            continue;
+        for(DcMotor motor : motors){
+            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
-        power(0);
+
+        setPower(0, power, 0);
+        while (isBusy()) {
+        }
+        setPower(0,0,0);
     }
 
     public void turnThruAngle(double angle, double power){
-        int inc = ((int) (-angle * ticsperdegree));
-
-        LF.setTargetPosition(LF.getCurrentPosition() + inc);
-        RF.setTargetPosition(RF.getCurrentPosition() - inc);
-        RR.setTargetPosition(RR.getCurrentPosition() - inc);
-        LR.setTargetPosition(LR.getCurrentPosition() + inc);
-
-        LF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        RF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        RR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        LR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        power(power);
+        power *= Math.signum(angle);
+        double target = getCurrentHeading() + angle;
+        turnToHeading(target, power);
     }
 
-    public void turnThruAngleWait(double angle, double power){
-        turnThruAngle(angle, power);
-        while (isBusy()){
-            continue;
+    public void turnToHeading(double targetHeading, double power){
+        if (Math.abs(targetHeading) > 180){
+            targetHeading = (targetHeading % 180) + (-1 * Math.signum(targetHeading) * 180);
         }
-        power(0);
-    }
-
-    public boolean isBusy(){
-        return LF.isBusy() || RF.isBusy() || LR.isBusy() || RR.isBusy();
-    }
-
-    public void power(double power){
-        LF.setPower(power);
-        RF.setPower(power);
-        LR.setPower(power);
-        RR.setPower(power);
-    }
-
-    public void Power(double pwr1, double pwr2, double pwr3, double pwr4) {
-        LF.setPower(pwr1);
-        RF.setPower(pwr2);
-        RR.setPower(pwr3);
-        LR.setPower(pwr4);
-    }
-
-    public void runtopos() {
-        LF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        RF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        RR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        LR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    }
-
-    public void runonpower() {
-        LF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        RF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        RR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        LR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    }
-
-
-    public boolean robotbusy() {
-
-        return (LF.isBusy() && RF.isBusy() && RR.isBusy() && LR.isBusy());
-
-    }
-
-    public boolean robotbusystrafeangle() {
-        angle1 = imu.getAngularOrientation().secondAngle;
-        angle2 = 0.005 * angle1 * 57.3;
-        Power(0.4 - angle2, 0.4 + angle2, 0.4 + angle2, 0.4 - angle2);
-        return (LF.isBusy() && RF.isBusy() && RR.isBusy() && LR.isBusy());
-
-    }
-
-    public boolean robotbusystrafcross(double pwr) {
-        lfenccur = LF.getCurrentPosition() - lfencint;
-        rfenccur = RF.getCurrentPosition() - rfencint;
-        rrenccur = RR.getCurrentPosition() - rrencint;
-        lrenccur = LR.getCurrentPosition() - lrencint;
-        angle1 = Math.abs((lfenccur + rrenccur) / (lrenccur + rfenccur));
-        if (angle1 > 0.8 && angle1 < 1.2) {
-            Power(pwr, angle1 * pwr, pwr, angle1 * pwr);
+        double angle = Math.abs(getCurrentHeading() - targetHeading);
+        double err = Math.min(angle, (360 - angle));
+        while (err > 2){
+            setPower(0,0, power);
+            angle = Math.abs(getCurrentHeading() - targetHeading);
+            err = Math.min(angle, (360 - angle));
         }
-
-
-        return (LF.isBusy() && RF.isBusy() && RR.isBusy() && LR.isBusy());
-
+        setPower(0,0,0);
     }
 
+    public void driveWithoutEncoders(double forward, double left, double turn){
+        for (DcMotor motor : motors) {
+            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
+        setPower(forward, left, turn);
+    }
 
+    public void setPower(double forward, double left, double turn){
+        double leftFrontPower = forward - left - turn;
+        double leftRearPower = forward + left - turn;
+        double rightRearPower = forward - left + turn;
+        double rightFrontPower = forward + left + turn;
 
+        double maxPower = Math.max(
+                Math.max(Math.abs(leftFrontPower), Math.abs(leftRearPower)),
+                Math.max(Math.abs(rightRearPower), Math.abs(rightFrontPower)));
 
+        if (maxPower > 1) {
+            leftFrontPower /= maxPower;
+            leftRearPower /= maxPower;
+            rightRearPower /= maxPower;
+            rightFrontPower /= maxPower;
+        }
+        setMotorPowers(leftFrontPower, leftRearPower, rightRearPower, rightFrontPower);
+    }
 
+    private void setMotorPowers(double p1, double p2, double p3, double p4) {
+        leftFront.setPower(p1);
+        leftRear.setPower(p2);
+        rightRear.setPower(p3);
+        rightFront.setPower(p4);
+    }
 
+    private boolean isBusy(){
+        for (DcMotor motor : motors){
+            if (motor.isBusy()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public double getStartHeading() {
+        return startHeading;
+    }
+
+    public void setStartHeading(double startHeading) {
+        this.startHeading = startHeading;
+    }
+
+    public double getCurrentHeading(){
+        return imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle + startHeading;
+    }
 }
