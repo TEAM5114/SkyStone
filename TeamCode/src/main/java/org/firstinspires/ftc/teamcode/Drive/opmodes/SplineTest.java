@@ -14,7 +14,7 @@ public class SplineTest extends LinearOpMode {
         MecanumBase drive = new MecanumREV(hardwareMap);
 
         waitForStart();
-
+        drive.setPoseEstimate(new Pose2d(0,0,0));
         if (isStopRequested()) return;
 
         drive.followTrajectorySync(

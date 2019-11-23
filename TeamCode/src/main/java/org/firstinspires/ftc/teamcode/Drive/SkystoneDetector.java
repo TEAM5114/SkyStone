@@ -52,12 +52,11 @@ public class SkystoneDetector {
                 treeMap.put(recognition.getLeft(), recognition.getLabel());
             }
             int i = 1;
-            for (Map.Entry<Float, String> entry : treeMap.entrySet()){
+            for (Map.Entry<Float, String> entry : treeMap.entrySet()) {
                 if (entry.getValue().equals("Skystone")) {
-                    break;
-                } else {
-                    i++;
+                    return i;
                 }
+                i++;
             }
             return i;
         }

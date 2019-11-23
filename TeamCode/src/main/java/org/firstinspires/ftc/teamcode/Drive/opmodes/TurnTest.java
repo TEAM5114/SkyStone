@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Drive.opmodes;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -16,6 +17,7 @@ public class TurnTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         MecanumBase drive = new MecanumREV(hardwareMap);
 
+        drive.setPoseEstimate(new Pose2d(0,0, 0));
         waitForStart();
 
         if (isStopRequested()) return;

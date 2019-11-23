@@ -67,8 +67,7 @@ public class MecanumREV extends MecanumBase {
         rightRear.setDirection(DcMotor.Direction.REVERSE);
         rightFront.setDirection((DcMotor.Direction.REVERSE));
 
-        setPIDCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDCoefficients(
-                25, 10, 0));
+        setPIDCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDCoefficients(28, 8, 0));
 
         //ex: setLocalizer(new LocalizerVuforia(...));
 //        int cameraMonitorViewID = hardwareMap.appContext.getResources()
